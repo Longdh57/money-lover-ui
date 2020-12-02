@@ -1,17 +1,19 @@
 <template>
-  <div
-    v-if="total > 0"
-    id="contentScroll"
-    class="content"
-  >
-    <el-row v-for="(transaction, index) in transaction_list" :key="index" class="content__item">
-      <el-col :xs="12" class="content__code">
-        <span v-html="convertOperator(transaction.category_type)" /><span v-html="convertNumber(transaction.amount)" />
-      </el-col>
-      <el-col :xs="12" class="content__brand">{{ transaction.date_tran }}</el-col>
-      <el-col :xs="24" class="content__name">{{ transaction.description }}</el-col>
-      <el-col :xs="24" class="content__address">{{ transaction.category_name }}</el-col>
-    </el-row>
+  <div>
+    <div
+      v-if="total > 0"
+      id="contentScroll"
+      class="content"
+    >
+      <el-row v-for="(transaction, index) in transaction_list" :key="index" class="content__item">
+        <el-col :xs="12" class="content__amount">
+          <span v-html="convertOperator(transaction.category_type)" /><span v-html="convertNumber(transaction.amount)" />
+        </el-col>
+        <el-col :xs="12" class="content__date">{{ transaction.date_tran }}</el-col>
+        <el-col :xs="24" class="content__description">{{ transaction.description }}</el-col>
+        <el-col :xs="24" class="content__category_name">{{ transaction.category_name }}</el-col>
+      </el-row>
+    </div>
   </div>
 </template>
 
@@ -53,23 +55,24 @@ export default {
         margin-bottom: 10px;
         padding-bottom: 10px;
       }
-      &__code {
+      &__amount {
         margin-bottom: 10px;
         font-weight: 600;
+        font-size: 18px;
         color: $--color-primary;
       }
-      &__brand{
+      &__date{
         text-align: right;
         font-size: 14px;
       }
-      &__name {
+      &__description {
         font-size: 14px;
         line-height: 20px;
         word-break: break-word;
         margin-bottom: 5px;
         width: 90%;
       }
-      &__address {
+      &__category_name {
         font-size: 14px;
         line-height: 20px;
         word-break: break-word;
