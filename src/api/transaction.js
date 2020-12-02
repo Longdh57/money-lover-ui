@@ -1,9 +1,10 @@
 import request from '@/utils/request'
 
-export function fetchListTransaction() {
+export function fetchListTransaction(query) {
   return request({
     url: '/transaction',
-    method: 'get'
+    method: 'get',
+    params: query
   })
 }
 

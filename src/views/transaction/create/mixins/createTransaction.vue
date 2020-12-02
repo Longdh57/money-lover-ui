@@ -38,7 +38,6 @@ export default {
             category_id: this.formData.category.id,
             wallet_id: this.formData.wallet.id
           }
-          console.log(createTransactionBody)
           createTransaction(createTransactionBody).then(response => {
             this.$router.push({ path: '/' })
             this.$notify({
