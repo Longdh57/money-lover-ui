@@ -149,14 +149,6 @@
       width="95%"
       @opened="focusWalletInputSearch"
     >
-      <el-input
-        ref="walletInputSearch"
-        v-model="searchWallet"
-        placeholder="Chọn Ví"
-        clearable
-        class="filter-item full-width"
-        style="margin-bottom: 20px"
-      />
       <el-row v-for="wallet in walletData" :key="wallet.id" style="margin-bottom: 10px">
         <el-col :span="24">
           <span @click="handleWalletClick(wallet)">{{ wallet.name }}</span>
@@ -189,7 +181,6 @@ export default {
       listCategoryDialogVisible: false,
       walletInfo: null,
       listWalletDialogVisible: false,
-      searchWallet: null,
       activeTabName: 'khoan_chi'
     }
   },
@@ -237,7 +228,7 @@ export default {
     },
     getDateTodayWithFormat() {
       var today = new Date()
-      this.formData.date = today.getDay() + '/' + today.getMonth() + '/' + today.getFullYear()
+      this.formData.date = today.getDate() + '/' + (today.getMonth() + 1) + '/' + today.getFullYear()
     }
   }
 }
