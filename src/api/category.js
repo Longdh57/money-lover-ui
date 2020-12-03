@@ -1,9 +1,10 @@
 import request from '@/utils/request'
 
-export function fetchListCategory() {
+export function fetchListCategory(query) {
   return request({
     url: '/category',
-    method: 'get'
+    method: 'get',
+    params: query
   })
 }
 

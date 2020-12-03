@@ -13,14 +13,22 @@ export default {
         category: undefined,
         wallet: undefined
       },
+      listQueryCategory: {
+        type: 'khoan_chi'
+      },
       categoryData: [],
-      walletData: []
+      walletData: [],
+      categoryObj: {
+        notLoading: true
+      }
     }
   },
   methods: {
     getListCategory() {
-      fetchListCategory().then(res => {
+      this.categoryObj.notLoading = false
+      fetchListCategory(this.listQueryCategory).then(res => {
         this.categoryData = res.data
+        this.categoryObj.notLoading = true
       })
     },
     getListWallet() {
