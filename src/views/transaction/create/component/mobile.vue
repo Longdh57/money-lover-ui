@@ -100,20 +100,47 @@
       width="95%"
       @opened="focusCategoryInputSearch"
     >
-      <el-input
-        ref="categoryInputSearch"
-        v-model="searchCategory"
-        placeholder="Chọn Danh mục"
-        clearable
-        class="filter-item full-width"
-        style="margin-bottom: 20px"
-      />
-      <el-row v-for="category in categoryData" :key="category.id" style="margin-bottom: 10px">
-        <el-col :span="24">
-          <span @click="handleCategoryClick(category)">{{ category.name }}</span>
-          <hr style="border: 1px dashed #ddd">
-        </el-col>
-      </el-row>
+      <el-tabs v-model="activeTabName" @tab-click="handleClickTab">
+        <el-tab-pane label="Chi" name="khoan_chi">
+          <div v-if="categoryObj.notLoading">
+            <el-row v-for="category in categoryData" :key="category.id" style="margin-bottom: 10px">
+              <el-col :span="24">
+                <span @click="handleCategoryClick(category)">{{ category.name }}</span>
+                <hr style="border: 1px dashed #ddd">
+              </el-col>
+            </el-row>
+          </div>
+          <div v-else>
+            Loading...
+          </div>
+        </el-tab-pane>
+        <el-tab-pane label="Thu" name="khoan_thu">
+          <div v-if="categoryObj.notLoading">
+            <el-row v-for="category in categoryData" :key="category.id" style="margin-bottom: 10px">
+              <el-col v-if="categoryObj.notLoading" :span="24">
+                <span @click="handleCategoryClick(category)">{{ category.name }}</span>
+                <hr style="border: 1px dashed #ddd">
+              </el-col>
+            </el-row>
+          </div>
+          <div v-else>
+            Loading...
+          </div>
+        </el-tab-pane>
+        <el-tab-pane label="Cho Vay/Đi vay" name="cho_vay_di_vay">
+          <div v-if="categoryObj.notLoading">
+            <el-row v-for="category in categoryData" :key="category.id" style="margin-bottom: 10px">
+              <el-col v-if="categoryObj.notLoading" :span="24">
+                <span @click="handleCategoryClick(category)">{{ category.name }}</span>
+                <hr style="border: 1px dashed #ddd">
+              </el-col>
+            </el-row>
+          </div>
+          <div v-else>
+            Loading...
+          </div>
+        </el-tab-pane>
+      </el-tabs>
     </el-dialog>
 
     <el-dialog
@@ -160,13 +187,22 @@ export default {
       },
       categoryInfo: null,
       listCategoryDialogVisible: false,
-      searchCategory: null,
       walletInfo: null,
       listWalletDialogVisible: false,
-      searchWallet: null
+      searchWallet: null,
+      activeTabName: 'khoan_chi'
     }
   },
+  created() {
+    this.getListCategory()
+    this.getListWallet()
+    this.getDateTodayWithFormat()
+  },
   methods: {
+    handleClickTab(tab, event) {
+      this.listQueryCategory.type = tab.name
+      this.getListCategory()
+    },
     focusCategoryInputSearch() {
       if (this.$refs.categoryInputSearch) {
         this.$refs.categoryInputSearch.focus()
@@ -178,7 +214,6 @@ export default {
       this.listCategoryDialogVisible = false
     },
     handleSearchCategory() {
-      this.getListCategory()
       this.listCategoryDialogVisible = true
     },
     clearSearchCategory() {
@@ -195,11 +230,14 @@ export default {
       this.listWalletDialogVisible = false
     },
     handleSearchWallet() {
-      this.getListWallet()
       this.listWalletDialogVisible = true
     },
     clearSearchWallet() {
       this.formData.wallet = undefined
+    },
+    getDateTodayWithFormat() {
+      var today = new Date()
+      this.formData.date = today.getDay() + '/' + today.getMonth() + '/' + today.getFullYear()
     }
   }
 }
