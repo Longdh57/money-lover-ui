@@ -7,7 +7,7 @@ export default {
   data() {
     return {
       formData: {
-        amount: 0,
+        amount: undefined,
         description: null,
         date: undefined,
         category: undefined,

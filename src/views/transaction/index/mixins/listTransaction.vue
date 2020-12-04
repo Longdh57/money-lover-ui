@@ -1,17 +1,20 @@
 <script>
 import { fetchListTransaction } from '@/api/transaction'
+
 export default {
   data() {
     return {
       total: 0,
+      areaInfo: null,
       transaction_list: null,
       filterSearch: {
         wallet_id: 1
-      }
+      },
+      walletData: []
     }
   },
   methods: {
-    getList() {
+    getListTransaction() {
       fetchListTransaction(this.filterSearch).then(response => {
         this.transaction_list = response.data
         this.total = response.metadata.total_items
