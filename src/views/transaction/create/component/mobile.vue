@@ -1,7 +1,7 @@
 <template>
   <div class="report">
-    <el-card class="box-card" style="width:99%">
-      <div slot="header" class="clearfix">
+    <el-card class="box-card" style="width:100%">
+      <div class="clearfix">
         <h4 class="report__header">Thêm giao dịch</h4>
       </div>
       <el-form ref="createTransactionForm" :model="formData" :rules="rules" label-position="top">
@@ -98,7 +98,6 @@
       title="Chọn Danh mục"
       :visible.sync="listCategoryDialogVisible"
       width="95%"
-      @opened="focusCategoryInputSearch"
     >
       <el-tabs v-model="activeTabName" @tab-click="handleClickTab">
         <el-tab-pane label="Chi" name="khoan_chi">
@@ -147,7 +146,6 @@
       title="Chọn Ví"
       :visible.sync="listWalletDialogVisible"
       width="95%"
-      @opened="focusWalletInputSearch"
     >
       <el-row v-for="wallet in walletData" :key="wallet.id" style="margin-bottom: 10px">
         <el-col :span="24">
@@ -194,11 +192,6 @@ export default {
       this.listQueryCategory.type = tab.name
       this.getListCategory()
     },
-    focusCategoryInputSearch() {
-      if (this.$refs.categoryInputSearch) {
-        this.$refs.categoryInputSearch.focus()
-      }
-    },
     handleCategoryClick(category) {
       this.formData.category = category
       this.categoryInfo = category.name
@@ -209,11 +202,6 @@ export default {
     },
     clearSearchCategory() {
       this.formData.category = undefined
-    },
-    focusWalletInputSearch() {
-      if (this.$refs.walletInputSearch) {
-        this.$refs.walletInputSearch.focus()
-      }
     },
     handleWalletClick(wallet) {
       this.formData.wallet = wallet
@@ -270,12 +258,6 @@ export default {
         & label {
           position: absolute;
           top: -25px;
-          // transition: all 0.3s ease-out;
-
-          // &.active-holder {
-          //   z-index: 1;
-          //   top: -25px;
-          // }
         }
       }
     }
@@ -290,20 +272,6 @@ export default {
     &__btn-group {
       text-align: center;
       margin-top: 30px;
-    }
-
-    &__location {
-      text-transform: uppercase;
-      font-weight: 600;
-      font-size: 13px;
-
-      &--success {
-        color: #67C23A;
-      }
-
-      &--error {
-        color: #F56C6C;
-      }
     }
 
     &__merchant-step {

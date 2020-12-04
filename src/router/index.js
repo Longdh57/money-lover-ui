@@ -79,7 +79,7 @@ export const constantRoutes = [
         path: 'transaction',
         component: () => import('@/views/transaction/index/index'),
         name: 'Tài khoản',
-        meta: { title: 'Tài khoản', icon: 'dashboard', affix: true }
+        meta: { title: 'Tài khoản', icon: 'documentation', affix: true }
       }
     ]
   },
@@ -107,7 +107,7 @@ export const constantRoutes = [
         path: 'index',
         component: () => import('@/views/transaction/create/index'),
         name: 'Transaction',
-        meta: { title: 'Giao dịch', icon: 'user', noCache: true }
+        meta: { title: 'Thêm giao dịch', icon: 'form', noCache: true }
       }
     ]
   }

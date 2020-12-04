@@ -1,29 +1,110 @@
 <template>
   <div>
+    <div>
+      <el-row>
+        <el-col :md="8" :sm="12" :xs="24">
+          <el-input
+            v-model="walletInfo"
+            placeholder="--- Chọn ví ---"
+            filterable
+            clearable
+            class="filter-item full-width"
+            @focus="handleSearchWallet"
+          />
+        </el-col>
+      </el-row>
+    </div>
     <div
       v-if="total > 0"
       id="contentScroll"
       class="content"
     >
       <el-row v-for="(transaction, index) in transaction_list" :key="index" class="content__item">
-        <el-col :xs="12" class="content__amount">
-          <span v-html="convertOperator(transaction.category_type)" /><span v-html="convertNumber(transaction.amount)" />
+        <el-col :xs="4">
+          <el-col :xs="24" class="content__date">
+            <span v-html="convertDateFromString(transaction.date_tran)" />
+          </el-col>
+          <el-col :xs="24" class="content__month">
+            <span v-html="convertMonthFromString(transaction.date_tran)" />
+          </el-col>
         </el-col>
-        <el-col :xs="12" class="content__date">{{ transaction.date_tran }}</el-col>
-        <el-col :xs="24" class="content__description">{{ transaction.description }}</el-col>
-        <el-col :xs="24" class="content__category_name">{{ transaction.category_name }}</el-col>
+        <el-col :xs="20">
+          <el-col :xs="12" class="content__amount">
+            <span v-html="convertOperator(transaction.category_type)" /><span v-html="convertNumber(transaction.amount)" />
+          </el-col>
+          <el-col :xs="24" class="content__category_name">
+            <el-tag :type="convertTypeColor(transaction.category_type)">{{ transaction.category_name }}</el-tag>
+            {{ transaction.description }}
+          </el-col>
+        </el-col>
       </el-row>
     </div>
+
+    <el-dialog
+      title="Chọn Ví"
+      :visible.sync="listWalletDialogVisible"
+      width="95%"
+    >
+      <el-row v-for="wallet in walletData" :key="wallet.id" style="margin-bottom: 10px">
+        <el-col :span="24">
+          <span @click="handleWalletClick(wallet)">{{ wallet.name }}</span>
+          <hr style="border: 1px dashed #ddd">
+        </el-col>
+      </el-row>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import listTransaction from '../mixins/listTransaction'
+import { fetchListWallet } from '@/api/wallet'
+
 export default {
   name: 'Mobile',
   mixins: [listTransaction],
+  data() {
+    return {
+      listWalletDialogVisible: false,
+      walletInfo: null
+    }
+  },
   created() {
-    this.getList()
+    this.getListWallet()
+    this.getListTransaction()
+  },
+  methods: {
+    convertDateFromString(date) {
+      var date_tran_data = new Date(date)
+      return date_tran_data.getDate()
+    },
+    convertMonthFromString(date) {
+      var date_tran_data = new Date(date)
+      return 'Th ' + (date_tran_data.getMonth() + 1)
+    },
+    convertTypeColor(category_type) {
+      if (category_type === 'khoan_chi') {
+        return 'danger'
+      } else if (category_type === 'khoan_thu') {
+        return 'success'
+      } else {
+        return 'primary'
+      }
+    },
+    handleSearchWallet() {
+      this.listWalletDialogVisible = true
+    },
+    getListWallet() {
+      fetchListWallet().then(res => {
+        this.walletData = res.data
+        this.walletInfo = this.walletData[0].name
+      })
+    },
+    handleWalletClick(wallet) {
+      this.filterSearch.wallet_id = wallet.id
+      this.walletInfo = wallet.name
+      this.listWalletDialogVisible = false
+      this.getListTransaction()
+    }
   }
 }
 </script>
@@ -62,8 +143,12 @@ export default {
         color: $--color-primary;
       }
       &__date{
-        text-align: right;
-        font-size: 14px;
+        text-align: center;
+        font-size: 32px;
+      }
+      &__month{
+        text-align: center;
+        font-size: 12px;
       }
       &__description {
         font-size: 14px;
