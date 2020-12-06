@@ -16,3 +16,17 @@ export function createTransaction(data) {
   })
 }
 
+export function fetchTransactionDetail(transactionId) {
+  return request({
+    url: `/transaction/${transactionId}/`,
+    method: 'get'
+  })
+}
+
+export function updateTransaction(transactionId, data) {
+  return request({
+    url: `/transaction/${transactionId}/`,
+    method: 'put',
+    data
+  })
+}
