@@ -37,8 +37,17 @@
             {{ transaction.description }}
           </el-col>
         </el-col>
+        <a href="javascript:void(0)" class="content__link" @click="handleTransactionDetail(transaction.id)">
+          <i class="el-icon-arrow-right" />
+        </a>
       </el-row>
     </div>
+    <div v-else>
+      <no-data />
+    </div>
+    <el-tooltip content="Thêm giao dịch">
+      <create-transaction transition-name="fade" />
+    </el-tooltip>
 
     <el-dialog
       title="Chọn Ví"
@@ -58,9 +67,15 @@
 <script>
 import listTransaction from '../mixins/listTransaction'
 import { fetchListWallet } from '@/api/wallet'
+import NoData from '@/components/NoData'
+import CreateTransaction from '@/components/CreateTransaction'
 
 export default {
   name: 'Mobile',
+  components: {
+    CreateTransaction,
+    NoData
+  },
   mixins: [listTransaction],
   data() {
     return {
@@ -104,6 +119,9 @@ export default {
       this.walletInfo = wallet.name
       this.listWalletDialogVisible = false
       this.getListTransaction()
+    },
+    handleTransactionDetail(transactionId) {
+      this.$router.push({ path: `/edit/${transactionId}/` })
     }
   }
 }

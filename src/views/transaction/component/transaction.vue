@@ -1,0 +1,289 @@
+<template>
+  <div class="report">
+    <el-card class="box-card" style="width:100%">
+      <div class="clearfix">
+        <h4 class="report__header">{{ headerName }}</h4>
+      </div>
+      <el-form ref="createTransactionForm" :model="formData" :rules="rules" label-position="top">
+        <el-row :gutter="20">
+          <el-col :md="12" :sm="12" :xs="24">
+            <el-form-item
+              :label="formData.amount?'Giá trị giao dịch':''"
+              prop="amount"
+              class="report__input--mobile js-handle-input"
+            >
+              <el-input
+                v-model="formData.amount"
+                type="number"
+                min="0"
+                placeholder="Giá trị giao dịch"
+              />
+            </el-form-item>
+
+            <el-form-item
+              :label="formData.category?'Danh mục':''"
+              prop="category"
+              class="report__input--mobile js-handle-input"
+            >
+              <el-input
+                v-model="categoryInfo"
+                placeholder="--- Chọn Danh mục ---"
+                filterable
+                clearable
+                class="filter-item full-width"
+                @focus="handleSearchCategory"
+                @clear="clearSearchCategory"
+              />
+            </el-form-item>
+
+            <el-form-item
+              :label="formData.description?'Write note':''"
+              prop="description"
+              class="report__input--mobile js-handle-input"
+            >
+              <el-input
+                v-model="formData.description"
+                placeholder="Write note..."
+              />
+            </el-form-item>
+
+            <el-form-item
+              :label="formData.date?'Chọn ngày':''"
+              prop="date"
+              class="js-handle-input"
+            >
+              <el-date-picker
+                v-model="formData.date"
+                type="date"
+                format="dd/MM/yyyy"
+                value-format="dd/MM/yyyy"
+                class="filter-item full-width"
+              />
+            </el-form-item>
+
+            <el-form-item
+              :label="formData.wallet?'Chọn Ví':''"
+              prop="wallet"
+              class="report__input--mobile js-handle-input"
+            >
+              <el-input
+                v-model="walletInfo"
+                placeholder="--- Chọn Ví ---"
+                filterable
+                clearable
+                class="filter-item full-width"
+                @focus="handleSearchWallet"
+                @clear="clearSearchWallet"
+              />
+            </el-form-item>
+          </el-col>
+
+          <el-col :span="24">
+            <el-button
+              v-waves
+              class="full-width"
+              style="width: 100% !important;"
+              type="primary"
+              icon="el-icon-edit-outline"
+              @click="transactionId === 0 ? handleCreateTransaction() : handleUpdateTransaction()"
+            >
+              Lưu
+            </el-button>
+          </el-col>
+        </el-row>
+      </el-form>
+    </el-card>
+
+    <el-dialog
+      title="Chọn Danh mục"
+      :visible.sync="listCategoryDialogVisible"
+      width="95%"
+    >
+      <el-tabs v-model="activeTabName" @tab-click="handleClickTab">
+        <el-tab-pane label="Khoản Chi" name="khoan_chi">
+          <div v-if="categoryObj.notLoading">
+            <el-row v-for="category in categoryData" :key="category.id" style="margin-bottom: 10px">
+              <el-col :span="24">
+                <span class="text-select" @click="handleCategoryClick(category)">{{ category.name }}</span>
+                <hr style="border: 1px dashed #ddd">
+              </el-col>
+            </el-row>
+          </div>
+          <div v-else>
+            Loading...
+          </div>
+        </el-tab-pane>
+        <el-tab-pane label="Khoản Thu" name="khoan_thu">
+          <div v-if="categoryObj.notLoading">
+            <el-row v-for="category in categoryData" :key="category.id" style="margin-bottom: 10px">
+              <el-col v-if="categoryObj.notLoading" :span="24">
+                <span class="text-select" @click="handleCategoryClick(category)">{{ category.name }}</span>
+                <hr style="border: 1px dashed #ddd">
+              </el-col>
+            </el-row>
+          </div>
+          <div v-else>
+            Loading...
+          </div>
+        </el-tab-pane>
+        <el-tab-pane label="Cho Vay/Đi vay" name="cho_vay_di_vay">
+          <div v-if="categoryObj.notLoading">
+            <el-row v-for="category in categoryData" :key="category.id" style="margin-bottom: 10px">
+              <el-col v-if="categoryObj.notLoading" :span="24">
+                <span class="text-select" @click="handleCategoryClick(category)">{{ category.name }}</span>
+                <hr style="border: 1px dashed #ddd">
+              </el-col>
+            </el-row>
+          </div>
+          <div v-else>
+            Loading...
+          </div>
+        </el-tab-pane>
+      </el-tabs>
+    </el-dialog>
+
+    <el-dialog
+      title="Chọn Ví"
+      :visible.sync="listWalletDialogVisible"
+      width="95%"
+    >
+      <el-row v-for="wallet in walletData" :key="wallet.id" style="margin-bottom: 10px">
+        <el-col :span="24">
+          <span @click="handleWalletClick(wallet)">{{ wallet.name }}</span>
+          <hr style="border: 1px dashed #ddd">
+        </el-col>
+      </el-row>
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+import transaction from '../mixins/transaction'
+import waves from '@/directive/waves'
+import { createTransaction, updateTransaction } from '@/api/transaction'
+import moment from 'moment'
+
+export default {
+  directives: { waves },
+  mixins: [transaction],
+  props: {
+    headerName: undefined,
+    formData: {
+      type: Object,
+      default: null
+    },
+    categoryInfo: {
+      type: String,
+      default: null
+    },
+    walletInfo: {
+      type: String,
+      default: null
+    },
+    transactionId: undefined
+  },
+  data() {
+    return {
+      rules: {
+        amount: [
+          { required: true, message: 'Giá trị giao dịch không được bỏ trống', trigger: 'change' }
+        ],
+        date: [
+          { required: true, message: 'Ngày giao dịch không được bỏ trống', trigger: 'change' }
+        ]
+      },
+      listCategoryDialogVisible: false,
+      listWalletDialogVisible: false,
+      activeTabName: 'khoan_chi'
+    }
+  },
+  created() {
+    this.getListCategory()
+    this.getListWallet()
+  },
+  methods: {
+    handleClickTab(tab, event) {
+      this.listQueryCategory.type = tab.name
+      this.getListCategory()
+    },
+    handleCategoryClick(category) {
+      this.formData.category = category
+      this.categoryInfo = category.name
+      this.listCategoryDialogVisible = false
+    },
+    handleSearchCategory() {
+      this.listCategoryDialogVisible = true
+    },
+    clearSearchCategory() {
+      this.formData.category = undefined
+    },
+    handleWalletClick(wallet) {
+      this.formData.wallet = wallet
+      this.walletInfo = wallet.name
+      this.listWalletDialogVisible = false
+    },
+    handleSearchWallet() {
+      this.listWalletDialogVisible = true
+    },
+    clearSearchWallet() {
+      this.formData.wallet = undefined
+    },
+    handleCreateTransaction() {
+      this.$refs['createTransactionForm'].validate((valid) => {
+        if (valid) {
+          const createTransactionBody = {
+            amount: this.formData.amount,
+            description: this.formData.description,
+            date_tran: this.formData.date,
+            category_id: this.formData.category.id,
+            wallet_id: this.formData.wallet.id
+          }
+          createTransaction(createTransactionBody).then(response => {
+            this.$router.push({ path: '/' })
+            this.$notify({
+              title: 'Thành công',
+              message: 'Tạo giao dịch thành công',
+              type: 'success',
+              duration: 2000
+            })
+          })
+        }
+      })
+    },
+    handleUpdateTransaction() {
+      this.$refs['createTransactionForm'].validate((valid) => {
+        if (valid) {
+          const createTransactionBody = {
+            amount: this.formData.amount,
+            description: this.formData.description,
+            date_tran: this.formatDateData(this.formData.date),
+            category_id: this.formData.category.id,
+            wallet_id: this.formData.wallet.id
+          }
+          updateTransaction(this.transactionId, createTransactionBody).then(response => {
+            this.$router.push({ path: '/' })
+            this.$notify({
+              title: 'Thành công',
+              message: 'Sửa giao dịch thành công',
+              type: 'success',
+              duration: 2000
+            })
+          })
+        }
+      })
+    },
+    formatDateData(dateString) {
+      var mydate = moment(dateString, 'DD/MM/YYYY')
+      return mydate.year() + '-' + (mydate.month() + 1) + '-' + mydate.date()
+    }
+  }
+}
+</script>
+
+<style lang="scss">
+  @media (max-width: 460px) {
+    .text-select {
+      font-size: large;
+    }
+  }
+</style>
