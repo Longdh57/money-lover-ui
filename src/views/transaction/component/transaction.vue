@@ -100,11 +100,11 @@
       width="95%"
     >
       <el-tabs v-model="activeTabName" @tab-click="handleClickTab">
-        <el-tab-pane label="Chi" name="khoan_chi">
+        <el-tab-pane label="Khoản Chi" name="khoan_chi">
           <div v-if="categoryObj.notLoading">
             <el-row v-for="category in categoryData" :key="category.id" style="margin-bottom: 10px">
               <el-col :span="24">
-                <span @click="handleCategoryClick(category)">{{ category.name }}</span>
+                <span class="text-select" @click="handleCategoryClick(category)">{{ category.name }}</span>
                 <hr style="border: 1px dashed #ddd">
               </el-col>
             </el-row>
@@ -113,11 +113,11 @@
             Loading...
           </div>
         </el-tab-pane>
-        <el-tab-pane label="Thu" name="khoan_thu">
+        <el-tab-pane label="Khoản Thu" name="khoan_thu">
           <div v-if="categoryObj.notLoading">
             <el-row v-for="category in categoryData" :key="category.id" style="margin-bottom: 10px">
               <el-col v-if="categoryObj.notLoading" :span="24">
-                <span @click="handleCategoryClick(category)">{{ category.name }}</span>
+                <span class="text-select" @click="handleCategoryClick(category)">{{ category.name }}</span>
                 <hr style="border: 1px dashed #ddd">
               </el-col>
             </el-row>
@@ -130,7 +130,7 @@
           <div v-if="categoryObj.notLoading">
             <el-row v-for="category in categoryData" :key="category.id" style="margin-bottom: 10px">
               <el-col v-if="categoryObj.notLoading" :span="24">
-                <span @click="handleCategoryClick(category)">{{ category.name }}</span>
+                <span class="text-select" @click="handleCategoryClick(category)">{{ category.name }}</span>
                 <hr style="border: 1px dashed #ddd">
               </el-col>
             </el-row>
@@ -161,6 +161,7 @@
 import transaction from '../mixins/transaction'
 import waves from '@/directive/waves'
 import { createTransaction, updateTransaction } from '@/api/transaction'
+import moment from 'moment'
 
 export default {
   directives: { waves },
@@ -250,17 +251,15 @@ export default {
       })
     },
     handleUpdateTransaction() {
-      console.log('xxasdsad')
       this.$refs['createTransactionForm'].validate((valid) => {
         if (valid) {
           const createTransactionBody = {
             amount: this.formData.amount,
             description: this.formData.description,
-            date_tran: this.formData.date,
+            date_tran: this.formatDateData(this.formData.date),
             category_id: this.formData.category.id,
             wallet_id: this.formData.wallet.id
           }
-          console.log(createTransactionBody)
           updateTransaction(this.transactionId, createTransactionBody).then(response => {
             this.$router.push({ path: '/' })
             this.$notify({
@@ -272,7 +271,19 @@ export default {
           })
         }
       })
+    },
+    formatDateData(dateString) {
+      var mydate = moment(dateString, 'DD/MM/YYYY')
+      return mydate.year() + '-' + (mydate.month() + 1) + '-' + mydate.date()
     }
   }
 }
 </script>
+
+<style lang="scss">
+  @media (max-width: 460px) {
+    .text-select {
+      font-size: large;
+    }
+  }
+</style>

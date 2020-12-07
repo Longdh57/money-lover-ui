@@ -1,20 +1,15 @@
 <template>
-  <div v-if="device === 'desktop'">
-    <desktop />
-  </div>
-  <div v-else>
+  <div v-if="device === 'mobile'">
     <mobile />
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import desktop from './component/desktop'
 import mobile from './component/mobile'
 
 export default {
   components: {
-    desktop,
     mobile
   },
   computed: {

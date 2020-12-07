@@ -74,7 +74,7 @@ export const constantRoutes = [
     hidden: false,
     children: [
       {
-        path: 'index',
+        path: 'create',
         component: () => import('@/views/transaction/create/index'),
         name: 'Transaction',
         meta: { title: 'Thêm giao dịch', icon: 'form', noCache: true }

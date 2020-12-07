@@ -45,6 +45,9 @@
     <div v-else>
       <no-data />
     </div>
+    <el-tooltip content="Thêm giao dịch">
+      <create-transaction transition-name="fade" />
+    </el-tooltip>
 
     <el-dialog
       title="Chọn Ví"
@@ -65,10 +68,12 @@
 import listTransaction from '../mixins/listTransaction'
 import { fetchListWallet } from '@/api/wallet'
 import NoData from '@/components/NoData'
+import CreateTransaction from '@/components/CreateTransaction'
 
 export default {
   name: 'Mobile',
   components: {
+    CreateTransaction,
     NoData
   },
   mixins: [listTransaction],
