@@ -86,6 +86,20 @@ export const constantRoutes = [
         hidden: true
       }
     ]
+  },
+  {
+    path: '/category',
+    component: Layout,
+    redirect: '/category/index/index',
+    hidden: false,
+    children: [
+      {
+        path: 'category',
+        component: () => import('@/views/category/index/index'),
+        name: 'Category',
+        meta: { title: 'Danh mục', icon: 'list', noCache: true }
+      }
+    ]
   }
 ]
 
