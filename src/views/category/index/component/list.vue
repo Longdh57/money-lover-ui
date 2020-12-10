@@ -4,34 +4,50 @@
     id="contentScroll"
     class="content"
   >
-    <el-row v-for="(category, index) in category_list" :key="index" class="content__item">
-      <el-col :xs="24">
-        <el-col :xs="24" class="content__category_name">{{ category.name }}</el-col>
+    <el-row v-for="(category, index) in categoryList" :key="index">
+      <el-col v-if="category.type === categoryType" :xs="24" class="content_category_list__item">
+        <el-col v-if="categoryType === 'khoan_chi'" :xs="16" class="content_category_list__name">
+          {{ category.name }}
+        </el-col>
+        <el-col v-if="categoryType === 'khoan_chi'" :xs="8" class="content_category_list__quota">
+          {{ convertNumber(category.quota) }}
+        </el-col>
+        <el-col v-if="categoryType !== 'khoan_chi'" :xs="24" class="content_category_list__name">
+          {{ category.name }}
+        </el-col>
       </el-col>
     </el-row>
   </div>
   <div v-else>
-    <no-data/>
+    <no-data />
   </div>
 </template>
 
 <script>
 import NoData from '@/components/NoData'
-import listCategory from '../mixins/listCategory'
 
 export default {
   components: {
     NoData
   },
-  mixins: [listCategory],
   props: {
     categoryType: {
       type: String,
       default: 'khoan_chi'
+    },
+    categoryList: {
+      type: Array,
+      default: null
+    },
+    total: {
+      type: Number,
+      default: 10
     }
   },
-  created() {
-    this.getListCategory({ type: this.categoryType })
+  methods: {
+    convertNumber(number) {
+      return number.toLocaleString()
+    }
   }
 }
 </script>

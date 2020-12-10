@@ -7,7 +7,7 @@ export default {
       total: 0,
       category_list: null,
       filterSearch: {
-        type: 'khoan_chi'
+        type: undefined
       }
     }
   },
