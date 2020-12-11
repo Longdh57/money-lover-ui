@@ -1,5 +1,5 @@
 <script>
-import { fetchListTransaction } from '@/api/transaction'
+import { fetchListTransaction, fetchTransactionTotalAmount } from '@/api/transaction'
 
 export default {
   data() {
@@ -10,6 +10,7 @@ export default {
       filterSearch: {
         wallet_id: 1
       },
+      total_transaction: null,
       walletData: []
     }
   },
@@ -18,6 +19,11 @@ export default {
       fetchListTransaction(this.filterSearch).then(response => {
         this.transaction_list = response.data
         this.total = response.metadata.total_items
+      })
+    },
+    getTransactionTotalAmount() {
+      fetchTransactionTotalAmount(this.filterSearch).then(response => {
+        this.total_transaction = response.data
       })
     },
     convertNumber(number) {
