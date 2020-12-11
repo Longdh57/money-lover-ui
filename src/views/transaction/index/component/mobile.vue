@@ -14,6 +14,22 @@
         </el-col>
       </el-row>
     </div>
+    <div>
+      <el-row style="margin-top: 12px">
+        <el-col :xs="12">
+          <el-col :xs="24" class="content_transaction__total content_transaction__danger">
+            <p class="content_transaction__item">Chi</p>
+            <p class="content_transaction__item">{{ convertNumber(total_transaction.khoan_chi) }}</p>
+          </el-col>
+        </el-col>
+        <el-col :xs="12">
+          <el-col :xs="24" class="content_transaction__total content_transaction__success">
+            <p class="content_transaction__item">Thu</p>
+            <p class="content_transaction__item">{{ convertNumber(total_transaction.khoan_thu) }}</p>
+          </el-col>
+        </el-col>
+      </el-row>
+    </div>
     <div
       v-if="total > 0"
       id="contentScroll"
@@ -86,6 +102,7 @@ export default {
   created() {
     this.getListWallet()
     this.getListTransaction()
+    this.getTransactionTotalAmount()
   },
   methods: {
     convertDateFromString(date) {
@@ -119,6 +136,7 @@ export default {
       this.walletInfo = wallet.name
       this.listWalletDialogVisible = false
       this.getListTransaction()
+      this.getTransactionTotalAmount()
     },
     handleTransactionDetail(transactionId) {
       this.$router.push({ path: `/edit/${transactionId}/` })
@@ -189,6 +207,26 @@ export default {
         display: flex;
         justify-content: flex-end;
         align-items: center;
+      }
+    }
+
+    .content_transaction {
+      &__item {
+        margin: 12px 0;
+      }
+      &__total {
+        border-style: dashed;
+        border-radius: 5px;
+        text-align: center;
+        padding: 0 12px;
+      }
+      &__success {
+        border: $--color-success 1px solid;
+        background-color: #E0FBD9;
+      }
+      &__danger {
+        border: $--color-danger 1px solid;
+        background-color: #fbd9d9;
       }
     }
   }

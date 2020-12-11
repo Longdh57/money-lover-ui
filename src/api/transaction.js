@@ -8,6 +8,14 @@ export function fetchListTransaction(query) {
   })
 }
 
+export function fetchTransactionTotalAmount(query) {
+  return request({
+    url: '/transaction/total-amount',
+    method: 'get',
+    params: query
+  })
+}
+
 export function createTransaction(data) {
   return request({
     url: '/transaction',
