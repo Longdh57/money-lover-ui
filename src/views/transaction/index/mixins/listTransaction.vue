@@ -9,7 +9,8 @@ export default {
       transactionListData: null,
       transaction_list: null,
       filterSearch: {
-        wallet_id: 1
+        wallet_id: 1,
+        category_id: undefined
       },
       total_transaction: null,
       walletData: [],
@@ -47,6 +48,23 @@ export default {
         return this.convertNumber(khoanThu - khoanChi)
       } else {
         return '- ' + this.convertNumber(khoanChi - khoanThu)
+      }
+    },
+    convertDateFromString(date) {
+      var date_tran_data = new Date(date)
+      return date_tran_data.getDate()
+    },
+    convertMonthFromString(date) {
+      var date_tran_data = new Date(date)
+      return 'Th ' + (date_tran_data.getMonth() + 1)
+    },
+    convertTypeColor(category_type) {
+      if (category_type === 'khoan_chi') {
+        return 'danger'
+      } else if (category_type === 'khoan_thu') {
+        return 'success'
+      } else {
+        return 'primary'
       }
     }
   }

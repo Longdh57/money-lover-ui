@@ -53,6 +53,17 @@ export default {
       font-size: 10px;
       text-align: right;
       word-break: break-word;
+      margin-top: -8px;
+    }
+    &__link {
+      position: absolute;
+      right: 0;
+      width: 40px;
+      height: 100%;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      margin-top: -10px;
     }
   }
 }

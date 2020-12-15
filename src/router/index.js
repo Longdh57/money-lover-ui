@@ -98,6 +98,12 @@ export const constantRoutes = [
         component: () => import('@/views/category/index/index'),
         name: 'Category',
         meta: { title: 'Danh mục', icon: 'list', noCache: true }
+      },
+      {
+        path: '/detail/:id',
+        component: () => import('@/views/category/detail/index'),
+        meta: { title: 'Chi tiết danh mục', icon: 'list', noCache: true },
+        hidden: true
       }
     ]
   }
