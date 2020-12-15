@@ -8,3 +8,10 @@ export function fetchListCategory(query) {
   })
 }
 
+export function fetchCategoryDetail(categoryId) {
+  return request({
+    url: `/category/${categoryId}/`,
+    method: 'get'
+  })
+}
+

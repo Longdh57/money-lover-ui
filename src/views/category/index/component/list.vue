@@ -9,7 +9,7 @@
         <el-col v-if="categoryType === 'khoan_chi'" :xs="14" class="content_category_list__name">
           {{ category.name }}
         </el-col>
-        <el-col v-if="categoryType === 'khoan_chi'" :xs="10" class="content_category_list__quota">
+        <el-col v-if="categoryType === 'khoan_chi'" :xs="8" class="content_category_list__quota">
           <el-tag :type="generateTagColor(category.total_amount, category.quota)">
             {{ convertNumber(category.total_amount) }} / {{ convertNumber(category.quota) }}
           </el-tag>
@@ -17,10 +17,13 @@
         <el-col v-if="categoryType !== 'khoan_chi'" :xs="14" class="content_category_list__name">
           {{ category.name }}
         </el-col>
-        <el-col v-if="categoryType !== 'khoan_chi'" :xs="10" class="content_category_list__quota">
+        <el-col v-if="categoryType !== 'khoan_chi'" :xs="8" class="content_category_list__quota">
           <el-tag type="success">{{ convertNumber(category.total_amount) }}</el-tag>
         </el-col>
       </el-col>
+      <a v-if="category.type === categoryType" href="javascript:void(0)" class="content_category_list__link" @click="handleCategoryDetail(category.id)">
+        <i class="el-icon-arrow-right" />
+      </a>
     </el-row>
   </div>
   <div v-else>
@@ -51,7 +54,8 @@ export default {
   },
   methods: {
     convertNumber(number) {
-      return number.toLocaleString()
+      number = ~~(number / 1000)
+      return number.toLocaleString() + 'K'
     },
     generateTagColor(total_amount, quota) {
       if (total_amount < quota * 0.75) {
@@ -61,6 +65,9 @@ export default {
       } else {
         return 'danger'
       }
+    },
+    handleCategoryDetail(categoryId) {
+      this.$router.push({ path: `/detail/${categoryId}/` })
     }
   }
 }

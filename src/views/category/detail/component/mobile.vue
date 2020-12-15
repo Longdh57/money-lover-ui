@@ -1,5 +1,34 @@
 <template>
   <div>
+    <el-container v-if="!loadingCategory">
+      <el-main>
+        <el-row v-if="categoryInfo.type === 'khoan_chi'" style="margin-bottom: 10px;">
+          <el-progress
+            :percentage="linearProgressData.percent"
+            :color="linearProgressData.colo"
+            :format="format"
+          />
+        </el-row>
+        <el-row style="margin-bottom: 10px;">
+          <el-col :xs="8">Danh mục:</el-col>
+          <el-col :xs="16">
+            <b>{{ categoryInfo.name }}</b>
+          </el-col>
+        </el-row>
+        <el-row v-if="categoryInfo.type === 'khoan_chi'" style="margin-bottom: 10px;">
+          <el-col :xs="8">Hạn mức:</el-col>
+          <el-col :xs="16">
+            <b>{{ convertNumber(categoryInfo.quota) }} VNĐ</b>
+          </el-col>
+        </el-row>
+        <el-row v-if="categoryInfo.type === 'khoan_chi'" style="margin-bottom: 10px;">
+          <el-col :xs="8">Đã chi:</el-col>
+          <el-col :xs="16">
+            {{ convertNumber(totalTransactionAmount) }} VNĐ
+          </el-col>
+        </el-row>
+      </el-main>
+    </el-container>
     <div>
       <el-row>
         <el-col :md="8" :sm="12" :xs="24">
@@ -11,36 +40,6 @@
             class="filter-item full-width"
             @focus="handleSearchWallet"
           />
-        </el-col>
-      </el-row>
-    </div>
-    <div v-if="loadedTotalAmount">
-      <el-row style="margin-top: 12px">
-        <el-col :xs="8" @click.native="filterTransaction('khoan_thu')">
-          <el-col
-            :xs="24"
-            class="content_transaction__total content_transaction__success"
-          >
-            <p class="content_transaction__item"><strong>Thu</strong></p>
-            <p class="content_transaction__item">{{ convertNumber(total_transaction.khoan_thu) }}</p>
-          </el-col>
-        </el-col>
-        <el-col :xs="8" @click.native="filterTransaction('khoan_chi')">
-          <el-col
-            :xs="24"
-            class="content_transaction__total content_transaction__danger"
-          >
-            <p class="content_transaction__item"><strong>Chi</strong></p>
-            <p class="content_transaction__item">- {{ convertNumber(total_transaction.khoan_chi) }}</p>
-          </el-col>
-        </el-col>
-        <el-col :xs="8">
-          <el-col :xs="24" class="content_transaction__total content_transaction__warning">
-            <p class="content_transaction__item"><strong>Còn</strong></p>
-            <p class="content_transaction__item">
-              = {{ convertTotalTransactionRemain(total_transaction.khoan_thu, total_transaction.khoan_chi) }}
-            </p>
-          </el-col>
         </el-col>
       </el-row>
     </div>
@@ -67,17 +66,13 @@
             {{ transaction.description }}
           </el-col>
         </el-col>
-        <a href="javascript:void(0)" class="content__link" @click="handleTransactionDetail(transaction.id)">
-          <i class="el-icon-arrow-right" />
-        </a>
       </el-row>
     </div>
-    <div v-else>
-      <no-data />
-    </div>
+
     <el-tooltip content="Thêm giao dịch">
       <create-transaction transition-name="fade" />
     </el-tooltip>
+
     <el-dialog
       title="Chọn Ví"
       :visible.sync="listWalletDialogVisible"
@@ -94,31 +89,55 @@
 </template>
 
 <script>
-import listTransaction from '../mixins/listTransaction'
+import listTransaction from '../../../transaction/index/mixins/listTransaction'
 import { fetchListWallet } from '@/api/wallet'
-import NoData from '@/components/NoData'
+import { fetchCategoryDetail } from '@/api/category'
 import CreateTransaction from '@/components/CreateTransaction'
+import { fetchListTransaction } from '@/api/transaction'
 
 export default {
   name: 'Mobile',
   components: {
-    CreateTransaction,
-    NoData
+    CreateTransaction
   },
   mixins: [listTransaction],
   data() {
     return {
       listWalletDialogVisible: false,
       walletInfo: null,
-      usingFilterTransaction: false
+      categoryInfo: undefined,
+      loadingCategory: true,
+      totalTransactionAmount: 0,
+      linearProgressData: {
+        percent: 0,
+        colo: '#da6743',
+        numberData: 0
+      }
+    }
+  },
+  updated() {
+    if (this.totalTransactionAmount !== 0 && this.categoryInfo !== undefined) {
+      const percentData = Math.ceil(this.totalTransactionAmount / this.categoryInfo.quota * 100)
+      this.linearProgressData.percent = percentData < 100 ? percentData : 100
+      if (percentData < 75) {
+        this.linearProgressData.colo = '#13ce66'
+      } else if (percentData >= 75 && percentData < 100) {
+        this.linearProgressData.colo = '#ffba00'
+      } else {
+        this.linearProgressData.colo = '#ff4949'
+      }
+      this.linearProgressData.numberData = percentData
     }
   },
   created() {
     this.getListWallet()
-    this.getListTransaction()
-    this.getTransactionTotalAmount()
+    this.getCategoryDetail()
+    this.getListTransactionByCategorryId()
   },
   methods: {
+    format() {
+      return this.linearProgressData.numberData + '%'
+    },
     handleSearchWallet() {
       this.listWalletDialogVisible = true
     },
@@ -128,30 +147,30 @@ export default {
         this.walletInfo = this.walletData[0].name
       })
     },
+    getCategoryDetail() {
+      fetchCategoryDetail(this.$route.params.id).then(res => {
+        this.categoryInfo = res.data
+        this.loadingCategory = false
+      })
+    },
+    getListTransactionByCategorryId() {
+      this.filterSearch.category_id = this.$route.params.id
+      fetchListTransaction(this.filterSearch).then(response => {
+        this.transactionListData = response.data
+        this.transaction_list = response.data
+        this.total = response.metadata.total_items
+        let totalAmount = 0
+        this.transactionListData.forEach(function myFunction(item, index) {
+          totalAmount += item.amount
+        })
+        this.totalTransactionAmount = totalAmount
+      })
+    },
     handleWalletClick(wallet) {
       this.filterSearch.wallet_id = wallet.id
       this.walletInfo = wallet.name
       this.listWalletDialogVisible = false
       this.getListTransaction()
-      this.getTransactionTotalAmount()
-    },
-    handleTransactionDetail(transactionId) {
-      this.$router.push({ path: `/edit/${transactionId}/` })
-    },
-    filterTransaction(transactionType) {
-      if (this.usingFilterTransaction) {
-        this.transaction_list = this.transactionListData
-        this.usingFilterTransaction = false
-      } else {
-        this.usingFilterTransaction = true
-        const filteredTransactionData = []
-        this.transactionListData.forEach(function myFunction(item, index) {
-          if (item.category_type === transactionType) {
-            filteredTransactionData.push(item)
-          }
-        })
-        this.transaction_list = filteredTransactionData
-      }
     }
   }
 }
@@ -159,23 +178,7 @@ export default {
 
 <style lang="scss">
   @import '@/styles/element-variables.scss';
-
   @media (max-width: 460px) {
-
-    .total {
-      font-size: 15px;
-      font-weight: 600;
-      color: $--color-primary;
-    }
-
-    .merchant-mobile {
-      & .el-collapse-item__header {
-        color: $--color-primary !important;
-        font-size: 14px;
-        font-weight: 600;
-      }
-    }
-
     .content {
       position: relative;
       &__item {
@@ -219,30 +222,6 @@ export default {
         display: flex;
         justify-content: flex-end;
         align-items: center;
-      }
-    }
-
-    .content_transaction {
-      &__item {
-        margin: 12px 0;
-      }
-      &__total {
-        border-style: dashed;
-        border-radius: 2px;
-        text-align: center;
-        padding: 0 12px;
-      }
-      &__success {
-        border: $--color-success 1px solid;
-        background-color: #E0FBD9;
-      }
-      &__danger {
-        border: $--color-danger 1px solid;
-        background-color: #fbd9d9;
-      }
-      &__warning {
-        border: $--color-warning 1px solid;
-        background-color: #f1e7a6;
       }
     }
   }
