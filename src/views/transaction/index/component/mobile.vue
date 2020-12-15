@@ -14,18 +14,32 @@
         </el-col>
       </el-row>
     </div>
-    <div>
+    <div v-if="loadedTotalAmount">
       <el-row style="margin-top: 12px">
-        <el-col :xs="12">
-          <el-col :xs="24" class="content_transaction__total content_transaction__danger">
-            <p class="content_transaction__item">Chi</p>
-            <p class="content_transaction__item">{{ convertNumber(total_transaction.khoan_chi) }}</p>
+        <el-col :xs="8" @click.native="filterTransaction('khoan_thu')">
+          <el-col
+            :xs="24"
+            class="content_transaction__total content_transaction__success"
+          >
+            <p class="content_transaction__item"><strong>Thu</strong></p>
+            <p class="content_transaction__item">{{ convertNumber(total_transaction.khoan_thu) }}</p>
           </el-col>
         </el-col>
-        <el-col :xs="12">
-          <el-col :xs="24" class="content_transaction__total content_transaction__success">
-            <p class="content_transaction__item">Thu</p>
-            <p class="content_transaction__item">{{ convertNumber(total_transaction.khoan_thu) }}</p>
+        <el-col :xs="8" @click.native="filterTransaction('khoan_chi')">
+          <el-col
+            :xs="24"
+            class="content_transaction__total content_transaction__danger"
+          >
+            <p class="content_transaction__item"><strong>Chi</strong></p>
+            <p class="content_transaction__item">- {{ convertNumber(total_transaction.khoan_chi) }}</p>
+          </el-col>
+        </el-col>
+        <el-col :xs="8">
+          <el-col :xs="24" class="content_transaction__total content_transaction__warning">
+            <p class="content_transaction__item"><strong>Còn</strong></p>
+            <p class="content_transaction__item">
+              = {{ convertTotalTransactionRemain(total_transaction.khoan_thu, total_transaction.khoan_chi) }}
+            </p>
           </el-col>
         </el-col>
       </el-row>
@@ -64,7 +78,6 @@
     <el-tooltip content="Thêm giao dịch">
       <create-transaction transition-name="fade" />
     </el-tooltip>
-
     <el-dialog
       title="Chọn Ví"
       :visible.sync="listWalletDialogVisible"
@@ -96,7 +109,8 @@ export default {
   data() {
     return {
       listWalletDialogVisible: false,
-      walletInfo: null
+      walletInfo: null,
+      usingFilterTransaction: false
     }
   },
   created() {
@@ -140,6 +154,21 @@ export default {
     },
     handleTransactionDetail(transactionId) {
       this.$router.push({ path: `/edit/${transactionId}/` })
+    },
+    filterTransaction(transactionType) {
+      if (this.usingFilterTransaction) {
+        this.transaction_list = this.transactionListData
+        this.usingFilterTransaction = false
+      } else {
+        this.usingFilterTransaction = true
+        const filteredTransactionData = []
+        this.transactionListData.forEach(function myFunction(item, index) {
+          if (item.category_type === transactionType) {
+            filteredTransactionData.push(item)
+          }
+        })
+        this.transaction_list = filteredTransactionData
+      }
     }
   }
 }
@@ -216,7 +245,7 @@ export default {
       }
       &__total {
         border-style: dashed;
-        border-radius: 5px;
+        border-radius: 2px;
         text-align: center;
         padding: 0 12px;
       }
@@ -227,6 +256,10 @@ export default {
       &__danger {
         border: $--color-danger 1px solid;
         background-color: #fbd9d9;
+      }
+      &__warning {
+        border: $--color-warning 1px solid;
+        background-color: #f1e7a6;
       }
     }
   }
