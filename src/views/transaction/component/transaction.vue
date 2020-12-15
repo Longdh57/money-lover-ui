@@ -82,7 +82,7 @@
             <el-button
               v-waves
               class="full-width"
-              style="width: 100% !important;"
+              style="width: 100% !important; padding: 20px 20px !important;"
               type="primary"
               icon="el-icon-edit-outline"
               @click="transactionId === 0 ? handleCreateTransaction() : handleUpdateTransaction()"
