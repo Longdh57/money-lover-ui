@@ -29,10 +29,8 @@
                 v-model="categoryInfo"
                 placeholder="--- Chọn Danh mục ---"
                 filterable
-                clearable
                 class="filter-item full-width"
                 @focus="handleSearchCategory"
-                @clear="clearSearchCategory"
               />
             </el-form-item>
 
@@ -70,10 +68,8 @@
                 v-model="walletInfo"
                 placeholder="--- Chọn Ví ---"
                 filterable
-                clearable
                 class="filter-item full-width"
                 @focus="handleSearchWallet"
-                @clear="clearSearchWallet"
               />
             </el-form-item>
           </el-col>
@@ -98,12 +94,16 @@
       title="Chọn Danh mục"
       :visible.sync="listCategoryDialogVisible"
       width="95%"
+      top="2vh"
     >
       <el-tabs v-model="activeTabName" @tab-click="handleClickTab">
         <el-tab-pane label="Khoản Chi" name="khoan_chi">
           <div v-if="categoryObj.notLoading">
             <el-row v-for="category in categoryData" :key="category.id" style="margin-bottom: 10px">
-              <el-col :span="24">
+              <el-col :span="2">
+                <svg-icon :icon-class="generateCategoryIcon(category.icon)" />
+              </el-col>
+              <el-col :span="22">
                 <span class="text-select" @click="handleCategoryClick(category)">{{ category.name }}</span>
                 <hr style="border: 1px dashed #ddd">
               </el-col>
@@ -116,7 +116,10 @@
         <el-tab-pane label="Khoản Thu" name="khoan_thu">
           <div v-if="categoryObj.notLoading">
             <el-row v-for="category in categoryData" :key="category.id" style="margin-bottom: 10px">
-              <el-col v-if="categoryObj.notLoading" :span="24">
+              <el-col :span="2">
+                <svg-icon :icon-class="generateCategoryIcon(category.icon)" />
+              </el-col>
+              <el-col :span="22">
                 <span class="text-select" @click="handleCategoryClick(category)">{{ category.name }}</span>
                 <hr style="border: 1px dashed #ddd">
               </el-col>
@@ -129,7 +132,10 @@
         <el-tab-pane label="Cho Vay/Đi vay" name="cho_vay_di_vay">
           <div v-if="categoryObj.notLoading">
             <el-row v-for="category in categoryData" :key="category.id" style="margin-bottom: 10px">
-              <el-col v-if="categoryObj.notLoading" :span="24">
+              <el-col :span="2">
+                <svg-icon :icon-class="generateCategoryIcon(category.icon)" />
+              </el-col>
+              <el-col :span="22">
                 <span class="text-select" @click="handleCategoryClick(category)">{{ category.name }}</span>
                 <hr style="border: 1px dashed #ddd">
               </el-col>
@@ -146,6 +152,7 @@
       title="Chọn Ví"
       :visible.sync="listWalletDialogVisible"
       width="95%"
+      top="2vh"
     >
       <el-row v-for="wallet in walletData" :key="wallet.id" style="margin-bottom: 10px">
         <el-col :span="24">
@@ -214,9 +221,6 @@ export default {
     handleSearchCategory() {
       this.listCategoryDialogVisible = true
     },
-    clearSearchCategory() {
-      this.formData.category = undefined
-    },
     handleWalletClick(wallet) {
       this.formData.wallet = wallet
       this.walletInfo = wallet.name
@@ -224,9 +228,6 @@ export default {
     },
     handleSearchWallet() {
       this.listWalletDialogVisible = true
-    },
-    clearSearchWallet() {
-      this.formData.wallet = undefined
     },
     handleCreateTransaction() {
       this.$refs['createTransactionForm'].validate((valid) => {
@@ -275,6 +276,13 @@ export default {
     formatDateData(dateString) {
       var mydate = moment(dateString, 'DD/MM/YYYY')
       return mydate.year() + '-' + (mydate.month() + 1) + '-' + mydate.date()
+    },
+    generateCategoryIcon(categoryIcon) {
+      if (categoryIcon) {
+        return 'expense-' + categoryIcon
+      } else {
+        return 'expense-other'
+      }
     }
   }
 }

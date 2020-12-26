@@ -65,6 +65,24 @@ export default {
       align-items: center;
       margin-top: -10px;
     }
+    &__icon {
+      left: 0;
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-pack: end;
+      -ms-flex-pack: end;
+      justify-content: flex-end;
+      -webkit-box-align: center;
+      -ms-flex-align: center;
+      align-items: center;
+      margin-top: -10px;
+      margin-right: 8px;
+    }
+    &__icon_item {
+      width: 2em !important;
+      height: 2em !important;
+    }
   }
 }
 </style>
