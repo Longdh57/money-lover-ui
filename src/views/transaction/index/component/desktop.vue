@@ -1,6 +1,8 @@
 <template>
-  <div class="filter-container">
-    <h3>Hello Desktop</h3>
+  <div class="components-container">
+    <aside>
+      Giao diện chỉ hoạt động trên Mobile, vui lòng sử dụng website này bằng điện thoại
+    </aside>
   </div>
 </template>
 

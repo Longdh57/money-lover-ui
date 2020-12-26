@@ -34,6 +34,9 @@ export default {
     convertNumber(number) {
       return number.toLocaleString()
     },
+    convertTotalNumber(number) {
+      return ((number / 1000) >> 0).toLocaleString()
+    },
     convertOperator(type) {
       if (type === 'khoan_chi') {
         return '-'
@@ -45,9 +48,9 @@ export default {
     },
     convertTotalTransactionRemain(khoanThu, khoanChi) {
       if (khoanThu >= khoanChi) {
-        return this.convertNumber(khoanThu - khoanChi)
+        return this.convertTotalNumber(khoanThu - khoanChi)
       } else {
-        return '- ' + this.convertNumber(khoanChi - khoanThu)
+        return '- ' + this.convertTotalNumber(khoanChi - khoanThu)
       }
     },
     convertDateFromString(date) {

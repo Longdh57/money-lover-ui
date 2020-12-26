@@ -22,7 +22,7 @@
             class="content_transaction__total content_transaction__success"
           >
             <p class="content_transaction__item"><strong>Thu</strong></p>
-            <p class="content_transaction__item">{{ convertNumber(total_transaction.khoan_thu) }}</p>
+            <p class="content_transaction__item">{{ convertTotalNumber(total_transaction.khoan_thu) }}K</p>
           </el-col>
         </el-col>
         <el-col :xs="8" @click.native="filterTransaction('khoan_chi')">
@@ -31,14 +31,14 @@
             class="content_transaction__total content_transaction__danger"
           >
             <p class="content_transaction__item"><strong>Chi</strong></p>
-            <p class="content_transaction__item">- {{ convertNumber(total_transaction.khoan_chi) }}</p>
+            <p class="content_transaction__item">- {{ convertTotalNumber(total_transaction.khoan_chi) }}K</p>
           </el-col>
         </el-col>
         <el-col :xs="8">
           <el-col :xs="24" class="content_transaction__total content_transaction__warning">
             <p class="content_transaction__item"><strong>Còn</strong></p>
             <p class="content_transaction__item">
-              = {{ convertTotalTransactionRemain(total_transaction.khoan_thu, total_transaction.khoan_chi) }}
+              = {{ convertTotalTransactionRemain(total_transaction.khoan_thu, total_transaction.khoan_chi) }}K
             </p>
           </el-col>
         </el-col>
