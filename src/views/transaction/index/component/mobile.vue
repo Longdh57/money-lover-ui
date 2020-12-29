@@ -21,7 +21,10 @@
             :xs="24"
             class="content_transaction__total content_transaction__success"
           >
-            <p class="content_transaction__item"><strong>Thu</strong></p>
+            <p class="content_transaction__item">
+              <strong v-if="walletType !== 'the_tin_dung'">Thu</strong>
+              <strong v-else>Trả nợ thẻ</strong>
+            </p>
             <p class="content_transaction__item">{{ convertTotalNumber(total_transaction.khoan_thu) }}K</p>
           </el-col>
         </el-col>
@@ -30,13 +33,18 @@
             :xs="24"
             class="content_transaction__total content_transaction__danger"
           >
-            <p class="content_transaction__item"><strong>Chi</strong></p>
+            <p class="content_transaction__item">
+              <strong>Chi</strong>
+            </p>
             <p class="content_transaction__item">- {{ convertTotalNumber(total_transaction.khoan_chi) }}K</p>
           </el-col>
         </el-col>
         <el-col :xs="8">
           <el-col :xs="24" class="content_transaction__total content_transaction__warning">
-            <p class="content_transaction__item"><strong>Còn</strong></p>
+            <p class="content_transaction__item">
+              <strong v-if="walletType !== 'the_tin_dung'">Còn</strong>
+              <strong v-else>Dư nợ</strong>
+            </p>
             <p class="content_transaction__item">
               = {{ convertTotalTransactionRemain(total_transaction.khoan_thu, total_transaction.khoan_chi) }}K
             </p>
@@ -110,6 +118,7 @@ export default {
     return {
       listWalletDialogVisible: false,
       walletInfo: null,
+      walletType: null,
       usingFilterTransaction: false
     }
   },
@@ -126,11 +135,13 @@ export default {
       fetchListWallet().then(res => {
         this.walletData = res.data
         this.walletInfo = this.walletData[0].name
+        this.walletType = this.walletData[0].type
       })
     },
     handleWalletClick(wallet) {
       this.filterSearch.wallet_id = wallet.id
       this.walletInfo = wallet.name
+      this.walletType = wallet.type
       this.listWalletDialogVisible = false
       this.getListTransaction()
       this.getTransactionTotalAmount()
