@@ -8,15 +8,18 @@
         <el-row :gutter="20">
           <el-col :md="12" :sm="12" :xs="24">
             <el-form-item
-              :label="formData.amount?'Giá trị giao dịch':''"
-              prop="amount"
+              :label="inputAmount?'Giá trị giao dịch':''"
+              prop="inputAmount"
               class="report__input--mobile js-handle-input"
             >
               <el-input
-                v-model="formData.amount"
-                type="number"
+                v-model.lazy="inputAmount"
+                v-money="money"
+                type="tel"
                 min="0"
-                placeholder="Giá trị giao dịch"
+                placeholder="Giá trị"
+                inputmode="numeric"
+                pattern="[0-9]*"
               />
             </el-form-item>
 
@@ -27,11 +30,13 @@
             >
               <el-input
                 v-model="categoryInfo"
-                placeholder="--- Chọn Danh mục ---"
+                placeholder="-- Chọn Danh mục --"
                 filterable
                 class="filter-item full-width"
                 @focus="handleSearchCategory"
-              />
+              >
+                <template slot="prepend"><i class="el-icon-question" /></template>
+              </el-input>
             </el-form-item>
 
             <el-form-item
@@ -66,11 +71,13 @@
             >
               <el-input
                 v-model="walletInfo"
-                placeholder="--- Chọn Ví ---"
+                placeholder="-- Chọn Ví --"
                 filterable
                 class="filter-item full-width"
                 @focus="handleSearchWallet"
-              />
+              >
+                <template slot="prepend"><i class="el-icon-s-finance" /></template>
+              </el-input>
             </el-form-item>
           </el-col>
 
@@ -167,11 +174,12 @@
 <script>
 import transaction from '../mixins/transaction'
 import waves from '@/directive/waves'
-import { createTransaction, updateTransaction } from '@/api/transaction'
+import { updateTransaction } from '@/api/transaction'
+import { VMoney } from 'v-money'
 import moment from 'moment'
 
 export default {
-  directives: { waves },
+  directives: { waves, money: VMoney },
   mixins: [transaction],
   props: {
     headerName: undefined,
@@ -192,7 +200,7 @@ export default {
   data() {
     return {
       rules: {
-        amount: [
+        inputAmount: [
           { required: true, message: 'Giá trị giao dịch không được bỏ trống', trigger: 'change' }
         ],
         date: [
@@ -201,7 +209,14 @@ export default {
       },
       listCategoryDialogVisible: false,
       listWalletDialogVisible: false,
-      activeTabName: 'khoan_chi'
+      activeTabName: 'khoan_chi',
+      money: {
+        decimal: ',',
+        thousands: '.',
+        precision: 0,
+        masked: false /* doesn't work with directive */
+      },
+      inputAmount: '0'
     }
   },
   created() {
@@ -230,26 +245,28 @@ export default {
       this.listWalletDialogVisible = true
     },
     handleCreateTransaction() {
-      this.$refs['createTransactionForm'].validate((valid) => {
-        if (valid) {
-          const createTransactionBody = {
-            amount: this.formData.amount,
-            description: this.formData.description,
-            date_tran: this.formData.date,
-            category_id: this.formData.category.id,
-            wallet_id: this.formData.wallet.id
-          }
-          createTransaction(createTransactionBody).then(response => {
-            this.$router.push({ path: '/' })
-            this.$notify({
-              title: 'Thành công',
-              message: 'Tạo giao dịch thành công',
-              type: 'success',
-              duration: 2000
-            })
-          })
-        }
-      })
+      this.formData.amount = parseFloat(this.formData.amount.replace(/^\W|,/g, ''))
+      console.log(this.formData)
+      // this.$refs['createTransactionForm'].validate((valid) => {
+      //   if (valid) {
+      //     const createTransactionBody = {
+      //       amount: this.formData.amount,
+      //       description: this.formData.description,
+      //       date_tran: this.formData.date,
+      //       category_id: this.formData.category.id,
+      //       wallet_id: this.formData.wallet.id
+      //     }
+      //     createTransaction(createTransactionBody).then(response => {
+      //       this.$router.push({ path: '/' })
+      //       this.$notify({
+      //         title: 'Thành công',
+      //         message: 'Tạo giao dịch thành công',
+      //         type: 'success',
+      //         duration: 2000
+      //       })
+      //     })
+      //   }
+      // })
     },
     handleUpdateTransaction() {
       this.$refs['createTransactionForm'].validate((valid) => {

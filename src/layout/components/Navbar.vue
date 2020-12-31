@@ -1,7 +1,9 @@
 <template>
   <div class="navbar">
     <hamburger id="hamburger-container" :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
-
+    <div class="left-menu">
+      <strong>{{ generateMonth() }}</strong>
+    </div>
     <div class="right-menu">
       <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
         <div class="avatar-wrapper">
@@ -39,6 +41,11 @@ export default {
     async logout() {
       await this.$store.dispatch('user/logout')
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+    },
+    generateMonth() {
+      var d = new Date()
+      var months = ['Th1', 'Th2', 'Th3', 'Th4', 'Th5', 'Th6', 'Th7', 'Th8', 'Th9', 'Th10', 'Th11', 'Th12']
+      return months[d.getMonth()] + ' - ' + d.getFullYear()
     }
   }
 }
@@ -124,6 +131,13 @@ export default {
         }
       }
     }
+  }
+
+  .left-menu {
+    float: left;
+    height: 100%;
+    line-height: 50px;
+    width: 100px;
   }
 }
 </style>

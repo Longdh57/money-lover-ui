@@ -25,7 +25,7 @@ export default {
   data() {
     return {
       title: 'Money Couple',
-      logo: true
+      logo: false
     }
   }
 }
